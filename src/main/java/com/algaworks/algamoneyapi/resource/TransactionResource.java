@@ -1,13 +1,15 @@
 package com.algaworks.algamoneyapi.resource;
 
 import com.algaworks.algamoneyapi.event.ResourceCreatedEvent;
+import com.algaworks.algamoneyapi.exception.InactiveCustomerException;
 import com.algaworks.algamoneyapi.model.Transaction;
 import com.algaworks.algamoneyapi.repository.TransactionRepository;
+import com.algaworks.algamoneyapi.repository.filter.TransactionFilter;
+import com.algaworks.algamoneyapi.service.TransactionService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,14 +20,12 @@ import java.util.Optional;
 @RequestMapping("/transaction")
 public class TransactionResource {
 
-    @Autowired
-    private TransactionRepository transactionRepository;
-
-    @Autowired
-    private ApplicationEventPublisher publisher;
+    @Autowired private TransactionRepository transactionRepository;
+    @Autowired private TransactionService transactionService;
+    @Autowired private ApplicationEventPublisher publisher;
 
     @GetMapping
-    public List<Transaction> listTransactions() {
+    public List<Transaction> transactionsFilter(TransactionFilter transactionFilter) {
         return transactionRepository.findAll();
     }
 
@@ -36,9 +36,15 @@ public class TransactionResource {
     }
 
     @PostMapping
-    public ResponseEntity<Transaction> createTransaction(@Valid @RequestBody Transaction  transaction, HttpServletResponse response) {
-        Transaction savedTransaction = transactionRepository.save(transaction);
-        publisher.publishEvent(new ResourceCreatedEvent(this, response, savedTransaction.getTransactionId()));
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedTransaction);
+    public ResponseEntity<Transaction> createTransaction(@Valid @RequestBody Transaction transaction, HttpServletResponse response) throws InactiveCustomerException {
+        Transaction createdTransaction = transactionService.createTransaction(transaction);
+        publisher.publishEvent(new ResourceCreatedEvent(this, response, createdTransaction.getTransactionId()));
+        return ResponseEntity.ok(createdTransaction);
     }
+
+/*    @PutMapping
+    public ResponseEntity<Transaction> updateTransaction(@PathVariable String transactionId, @Valid @RequestBody Transaction transaction) {
+
+    }*/
+
 }
