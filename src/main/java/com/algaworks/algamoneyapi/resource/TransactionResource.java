@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,9 +43,16 @@ public class TransactionResource {
         return ResponseEntity.ok(createdTransaction);
     }
 
-/*    @PutMapping
-    public ResponseEntity<Transaction> updateTransaction(@PathVariable String transactionId, @Valid @RequestBody Transaction transaction) {
+    @DeleteMapping("/{transactionId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteTransaction(@PathVariable String transactionId) {
+        transactionRepository.deleteById(transactionId);
+    }
 
-    }*/
+    @PutMapping("/{transactionId}")
+    public ResponseEntity<Transaction> updateTransaction(@PathVariable String transactionId, @RequestBody Transaction transaction) {
+        Transaction updatedTransaction = transactionService.updateTransaction(transactionId, transaction);
+        return ResponseEntity.ok(updatedTransaction);
+    }
 
 }
