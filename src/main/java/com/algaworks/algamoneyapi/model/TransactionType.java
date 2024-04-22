@@ -2,6 +2,16 @@ package com.algaworks.algamoneyapi.model;
 
 public enum TransactionType {
 
-    REVENUE,
-    INCOME
+    REVENUE("Revenue"),
+    INCOME("Income");
+
+    private final String description;
+
+    TransactionType(String description) {
+        this.description = description;
+    }
+
+    public String getDescription() {
+        return description;
+    }
 }

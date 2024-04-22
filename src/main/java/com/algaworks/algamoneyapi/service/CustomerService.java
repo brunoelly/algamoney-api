@@ -14,9 +14,9 @@ public class CustomerService {
     private CustomerRepository customerRepository;
 
     public Customer createCustomer(Customer customer) {
-        customerRepository.findByEmail(customer.getEmail())
+        customerRepository.findByCustomerNameContaining(customer.getCustomerName())
                 .ifPresent(existingCustomer -> {
-                    throw new DuplicateResourceException("Customer with email: " + customer.getEmail() + " already exists");
+                    throw new DuplicateResourceException("Customer with email: " + customer.getCustomerEmail() + " already exists");
                 });
         return customerRepository.save(customer);
     }

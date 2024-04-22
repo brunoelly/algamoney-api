@@ -3,14 +3,15 @@ package com.algaworks.algamoneyapi.resource;
 import com.algaworks.algamoneyapi.event.ResourceCreatedEvent;
 import com.algaworks.algamoneyapi.model.Category;
 import com.algaworks.algamoneyapi.repository.CategoryRepository;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -24,6 +25,7 @@ public class CategoryResource {
     private ApplicationEventPublisher publisher;
 
     @GetMapping
+    @PreAuthorize("hasAuthority('ROLE_PESQUISAR_CATEGORIA') and hasAuthority('SCOPE_read')" )
     public ResponseEntity<List<Category>> listCategories() {
         List<Category> categories = categoryRepository.findAll();
         return ResponseEntity.ok(categories);
@@ -37,6 +39,7 @@ public class CategoryResource {
     }
 
     @PostMapping
+    @PreAuthorize("hasAuthority('ROLE_CADASTRAR_CATEGORIA') and hasAuthority('SCOPE_write')")
     public ResponseEntity<Category> createCategory(@RequestBody @Valid Category category, HttpServletResponse response) {
          Category createdCategory = categoryRepository.save(category);
 

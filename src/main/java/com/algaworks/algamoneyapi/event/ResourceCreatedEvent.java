@@ -1,7 +1,8 @@
 package com.algaworks.algamoneyapi.event;
 
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.ApplicationEvent;
+
+import javax.servlet.http.HttpServletResponse;
 
 public class ResourceCreatedEvent extends ApplicationEvent {
 
